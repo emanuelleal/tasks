@@ -1,0 +1,5 @@
+//arquivo modelo
+
+module.exports = {
+    authSecret: ''
+}
