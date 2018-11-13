@@ -3,7 +3,6 @@ const app = express()
 const db = require('./config/db')
 const consign = require('consign')
 
-
 consign()
     .include('./config/passport.js')
     .then('./config/middlewares.js')

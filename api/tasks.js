@@ -12,4 +12,34 @@ module.exports = app => {
         .then(tasks => res.json(tasks))
         .catch(err => res.status(500).send(err))
     }
+
+    const save = (req, res) => {
+        if (!req.body.desc.trim) {
+            return res.status(200).send('Descrição é um campo obrigatório')
+        }
+
+        req.body.userIxd = req.user.id
+
+        app.db('tasks')
+            .insert(req.body)
+            .then(_=> res.status(204).send())
+            .catch(err=> res.status(400).json(err))
+    }
+
+    const remove = (req, res) => {
+        app.db('tasks')
+            .where({ id: req.params.id, userId: req.user.id})
+            .del()
+            .then(rowsDeleted => {
+                if (rowsDeleted > 0) {
+                    res.status(204).send()
+                } else {
+                    const msg = `Não foi encontrada task com id ${req.params.id}.`
+                    res.status(400).send(msg)
+                }
+            })
+            .catch(err => res.status(400).json(err))
+    }
+
+    return { getTasks, save, remove}
 }
