@@ -18,7 +18,7 @@ module.exports = app => {
             return res.status(200).send('Descrição é um campo obrigatório')
         }
 
-        req.body.userIxd = req.user.id
+        req.body.userId = req.user.id
 
         app.db('tasks')
             .insert(req.body)
@@ -41,5 +41,29 @@ module.exports = app => {
             .catch(err => res.status(400).json(err))
     }
 
-    return { getTasks, save, remove}
+    const updateTasksDoneAt = (req, res, doneAt) => {
+        app.db('tasks')
+            .where({ id: req.params.id, userId: req.user.id})
+            .update(doneAt)
+            .then(_=> res.status(204).send())
+            .catch(err => res.status(400).json(err))
+    }
+
+    const toggleTask = (req, res) => {
+        app.db('tasks')
+            .where({ id: req.params.id, userId: req.user.id })
+            .first()
+            .then(task => {
+                if (!task) {
+                    const msg = `Task com o id ${req.params.id} não encontrada.`
+                    return res.status(400).send(msg)
+                }
+
+                const doneAt = task.doneAt ? null : new Date()
+                updateTasksDoneAt(req, res, doneAt)
+            })
+            .catch(err => res.status(400).json(err))
+    }
+
+    return { getTasks, save, remove, toggleTask }
 }
