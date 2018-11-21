@@ -15,7 +15,7 @@ module.exports = app => {
         .first()
         .then(user => {
             if (user) {
-                done(null, { name: user.name, email: user.email })
+                done(null, { id: user.id, name: user.name, email: user.email })
             } else {
                 done(null, false)
             }
